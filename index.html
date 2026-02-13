@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BriteRoles - Job Description Generator</title>
+    <!-- BritePulse SDK -->
+    <script src="https://britepulse-api-29820647719.us-central1.run.app/sdk.js"
+            data-api-key="pk_3c8dab22-b880-4295-b98b-801735ee9443_27ed385f87b84c5c841b01661f2ad024"
+            data-api-url="https://britepulse-api-29820647719.us-central1.run.app"
+            data-widget-position="bottom-right"
+            data-capture-errors="true"
+            data-capture-network-errors="true"
+            defer></script>
+    <style>
+        /* ============================== */
+        /* Reset & Base                   */
+        /* ============================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif;
+            background: linear-gradient(135deg, #018181 0%, #272d3f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ============================== */
+        /* Container                      */
+        /* ============================== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: visible;
+        }
+
+        /* ============================== */
+        /* Header                         */
+        /* ============================== */
+        .header {
+            background: #272d3f;
+            color: white;
+            padding: 32px 40px;
+            position: relative;
+            border-radius: 16px 16px 0 0;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-logo {
+            width: 44px;
+            height: 44px;
+            background: #018181;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header .subtitle {
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            margin-top: 2px;
+        }
+        .header-right {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-greeting {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .start-over-btn {
+            background: #FE8916;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: none;
+        }
+        .start-over-btn:hover { background: #e57a0e; }
+
+        /* ============================== */
+        /* Progress Bar                   */
+        /* ============================== */
+        .progress-container {
+            margin: 0 40px;
+            padding-top: 20px;
+            padding-bottom: 4px;
+        }
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+        .progress-step-text {
+            font-weight: 600;
+            color: #018181;
+        }
+        .progress-label {
+            color: #6b7280;
+        }
+        .progress {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: #018181;
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 4px;
+        }
+
+        /* ============================== */
+        /* Steps                          */
+        /* ============================== */
+        .step {
+            padding: 40px;
+            display: none;
+        }
+        .step.active { display: block; }
+        .step h2 {
+            color: #272d3f;
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+        .step > p.step-description {
+            color: #666;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        /* ============================== */
+        /* Buttons                        */
+        /* ============================== */
+        .btn {
+            background: #018181;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: #016666;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(1,129,129,0.3);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-secondary {
+            background: #6b7280;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .btn-orange {
+            background: #FE8916;
+        }
+        .btn-orange:hover {
+            background: #e57a0e;
+        }
+        .btn-green {
+            background: #059669;
+        }
+        .btn-green:hover {
+            background: #047857;
+        }
+        .btn-small {
+            background: #018181;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-small:hover { background: #016666; }
+        .btn-small:disabled { background: #ccc; cursor: not-allowed; }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================== */
+        /* Forms                          */
+        /* ============================== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #272d3f;
+            font-size: 14px;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #018181;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+        .form-group .helper-text {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #018181;
+            cursor: pointer;
+        }
+        .char-count {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* ============================== */
+        /* Loading / Spinner              */
+        /* ============================== */
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 5px solid #e5e7eb;
+            border-top-color: #018181;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading p {
+            color: #4b5563;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .loading .loading-sub {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* ============================== */
+        /* Review / Edit Cards (Step 4)   */
+        /* ============================== */
+        .section-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .section-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .section-card-header h3 {
+            color: #018181;
+            font-size: 17px;
+        }
+        .rewrite-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .rewrite-controls select {
+            padding: 6px 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #374151;
+            background: white;
+            cursor: pointer;
+        }
+        .rewrite-controls select:focus {
+            outline: none;
+            border-color: #018181;
+        }
+        .section-card textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 140px;
+            transition: border-color 0.2s;
+        }
+        .section-card textarea:focus {
+            outline: none;
+            border-color: #018181;
+        }
+        .rewriting-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #018181;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        .rewriting-indicator .mini-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #018181;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ============================== */
+        /* Compensation & Benefits (S5)   */
+        /* ============================== */
+        .comp-section {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .comp-section h3 {
+            color: #272d3f;
+            font-size: 17px;
+            margin-bottom: 16px;
+        }
+        .salary-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .salary-input-wrap {
+            position: relative;
+        }
+        .salary-input-wrap .dollar-sign {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+        .salary-input-wrap input {
+            width: 100%;
+            padding: 12px 12px 12px 28px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .salary-input-wrap input:focus {
+            outline: none;
+            border-color: #018181;
+        }
+        .benefits-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: #374151;
+        }
+        .benefit-item:hover {
+            border-color: #018181;
+        }
+        .benefit-item.checked {
+            border-color: #018181;
+            background: #f0fafa;
+        }
+        .benefit-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #018181;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .benefit-item span {
+            line-height: 1.3;
+        }
+
+        /* ============================== */
+        /* Preview (Step 6)               */
+        /* ============================== */
+        .jd-preview {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 40px;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+        .jd-preview h1 {
+            color: #272d3f;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        .jd-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .jd-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .jd-badge {
+            display: inline-block;
+            background: #018181;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .jd-badge.hybrid {
+            background: #FE8916;
+        }
+        .jd-section {
+            margin-bottom: 24px;
+        }
+        .jd-section h2 {
+            color: #018181;
+            font-size: 20px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0fafa;
+        }
+        .jd-section p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #374151;
+        }
+        .jd-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .jd-section ul li {
+            padding: 6px 0 6px 24px;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #374151;
+        }
+        .jd-section ul li::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 14px;
+            width: 6px;
+            height: 6px;
+            background: #018181;
+            border-radius: 50%;
+        }
+        .jd-section.about-company {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px 24px;
+        }
+        .jd-section.about-company h2 {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .jd-divider {
+            border: none;
+            border-top: 2px solid #e5e7eb;
+            margin: 28px 0;
+        }
+
+        /* ============================== */
+        /* Export (Step 7)                 */
+        /* ============================== */
+        .export-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+        }
+        .export-card h3 {
+            color: #272d3f;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .export-card p {
+            color: #6b7280;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .export-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .export-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 24px 32px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 160px;
+        }
+        .export-btn:hover {
+            border-color: #018181;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(1,129,129,0.15);
+        }
+        .export-btn .export-icon {
+            width: 48px;
+            height: 48px;
+            background: #f0fafa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .export-btn .export-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #272d3f;
+        }
+        .export-btn .export-desc {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .copy-feedback {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px;
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            border-radius: 8px;
+            color: #059669;
+            font-weight: 600;
+            font-size: 14px;
+            animation: fadeInUp 0.3s ease;
+        }
+        .copy-feedback.show {
+            display: flex;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .new-jd-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+        }
+
+        /* ============================== */
+        /* Responsive                     */
+        /* ============================== */
+        @media (max-width: 700px) {
+            body { padding: 10px; }
+            .step { padding: 24px; }
+            .header { padding: 24px; }
+            .progress-container { margin: 0 24px; }
+            .form-row { grid-template-columns: 1fr; }
+            .salary-row { grid-template-columns: 1fr; }
+            .benefits-list { grid-template-columns: 1fr; }
+            .export-actions { flex-direction: column; align-items: center; }
+            .jd-preview { padding: 24px; }
+            .section-card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ======================================== -->
+        <!-- Header                                   -->
+        <!-- ======================================== -->
+        <div class="header">
+            <div class="header-right">
+                <span class="user-greeting" id="userGreeting"></span>
+                <button class="start-over-btn" id="startOverBtn" onclick="startOver()">Start Over</button>
+            </div>
+            <div class="header-content">
+                <div class="header-logo">BR</div>
+                <div>
+                    <h1>BriteRoles</h1>
+                    <div class="subtitle">Job Description Generator</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Progress Bar                             -->
+        <!-- ======================================== -->
+        <div class="progress-container">
+            <div class="progress-text">
+                <span class="progress-step-text" id="progressStepText">Step 1 of 7</span>
+                <span class="progress-label" id="progressLabel">Role Basics</span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 14.28%"></div>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Step 1: Role Basics                      -->
+        <!-- ======================================== -->
+        <div id="step1" class="step active">
+            <h2>Role Basics</h2>
+            <p class="step-description">Start with the fundamental details about this position.</p>
+
+            <div class="form-group">
+                <label for="roleTitle">Job Title <span style="color:#dc3545;">*</span></label>
+                <input type="text" id="roleTitle" placeholder="e.g. Senior Software Engineer, Marketing Manager, Product Designer..." oninput="validateStep1()">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <select id="department">
+                        <option value="">Select department...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reportsTo">Reports To</label>
+                    <input type="text" id="reportsTo" placeholder="e.g. VP of Engineering, Director of Marketing...">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" placeholder="e.g. New York, NY / San Francisco, CA / Chicago, IL...">
+            </div>
+
+            <div class="form-group">
+                <label>Work Arrangement</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isRemote" onchange="handleWorkArrangement('remote')">
+                        Remote
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isHybrid" onchange="handleWorkArrangement('hybrid')">
+                        Hybrid
+                    </label>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button id="step1NextBtn" class="btn" disabled onclick="goToStep(2)">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Step 2: Role Details                     -->
+        <!-- ======================================== -->
+        <div id="step2" class="step">
+            <h2>Role Details</h2>
+            <p class="step-description">Write notes from scratch, or paste an existing JD to adapt to BriteCo's voice.</p>
+
+            <!-- Mode Toggle -->
+            <div style="display:flex; gap:0; margin-bottom:24px; border:2px solid #e5e7eb; border-radius:8px; overflow:hidden;">
+                <button id="modeFromScratch" class="btn-small" style="flex:1; border-radius:0; padding:10px 16px; font-size:14px; background:#018181; color:white; border:none; cursor:pointer;" onclick="setStep2Mode('scratch')">Write from Scratch</button>
+                <button id="modeAdapt" class="btn-small" style="flex:1; border-radius:0; padding:10px 16px; font-size:14px; background:white; color:#374151; border:none; cursor:pointer;" onclick="setStep2Mode('adapt')">Adapt Existing JD</button>
+            </div>
+
+            <div class="form-group">
+                <label for="experienceLevel">Experience Level</label>
+                <select id="experienceLevel">
+                    <option value="">Select experience level...</option>
+                </select>
+            </div>
+
+            <!-- From Scratch Mode -->
+            <div id="scratchMode">
+                <div class="form-group">
+                    <label for="roleNotes">Notes About the Role</label>
+                    <textarea id="roleNotes" rows="10" placeholder="Describe what this person will do, what skills they need, what makes this role unique at BriteCo..." oninput="updateCharCount()"></textarea>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                        <span class="helper-text" style="font-size:13px; color:#6b7280;">Don't worry about formatting -- just get your thoughts down and AI will polish them into a full JD.</span>
+                        <span class="char-count" id="charCount">0 characters</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Adapt Existing JD Mode -->
+            <div id="adaptMode" style="display:none;">
+                <div class="form-group">
+                    <label for="existingJD">Paste Existing Job Description</label>
+                    <textarea id="existingJD" rows="10" placeholder="Paste the full job description from another company or source here..."></textarea>
+                    <p class="helper-text">Paste any JD and we'll rewrite it in BriteCo's voice while preserving the key substance.</p>
+                </div>
+                <div class="form-group">
+                    <label for="adaptNotes">Additional Notes <span style="color:#9ca3af; font-weight:400;">(optional)</span></label>
+                    <textarea id="adaptNotes" rows="4" placeholder="Any changes you'd like made — different emphasis, added responsibilities, adjusted requirements..." style="min-height:80px;"></textarea>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(1)">&larr; Back</button>
+                <button id="generateBtn" class="btn btn-orange" onclick="generateJobDescription()">Generate Job Description &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Step 3: AI Generation Loading            -->
+        <!-- ======================================== -->
+        <div id="step3" class="step">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Generating your job description...</p>
+                <p class="loading-sub">This usually takes 10-20 seconds</p>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Step 4: Review & Edit                    -->
+        <!-- ======================================== -->
+        <div id="step4" class="step">
+            <h2>Review &amp; Edit</h2>
+            <p class="step-description">Fine-tune each section. Use AI Rewrite to adjust tone, or edit directly.</p>
+
+            <!-- Role Description -->
+            <div class="section-card" id="sectionAbout">
+                <div class="section-card-header">
+                    <h3>Role Description</h3>
+                    <div class="rewrite-controls">
+                        <select id="rewriteToneAbout">
+                            <option value="">AI Rewrite...</option>
+                            <option value="concise">More concise</option>
+                            <option value="detailed">More detailed</option>
+                            <option value="enthusiastic">More enthusiastic</option>
+                            <option value="formal">More formal</option>
+                        </select>
+                        <button class="btn-small" onclick="rewriteSection('about')" id="rewriteBtnAbout">Rewrite</button>
+                    </div>
+                </div>
+                <textarea id="editAbout" rows="5"></textarea>
+                <div class="rewriting-indicator" id="rewritingAbout">
+                    <div class="mini-spinner"></div>
+                    <span>Rewriting...</span>
+                </div>
+            </div>
+
+            <!-- Key Responsibilities -->
+            <div class="section-card" id="sectionResponsibilities">
+                <div class="section-card-header">
+                    <h3>Key Responsibilities</h3>
+                    <div class="rewrite-controls">
+                        <select id="rewriteToneResponsibilities">
+                            <option value="">AI Rewrite...</option>
+                            <option value="concise">More concise</option>
+                            <option value="detailed">More detailed</option>
+                            <option value="enthusiastic">More enthusiastic</option>
+                            <option value="formal">More formal</option>
+                        </select>
+                        <button class="btn-small" onclick="rewriteSection('responsibilities')" id="rewriteBtnResponsibilities">Rewrite</button>
+                    </div>
+                </div>
+                <textarea id="editResponsibilities" rows="8"></textarea>
+                <div class="rewriting-indicator" id="rewritingResponsibilities">
+                    <div class="mini-spinner"></div>
+                    <span>Rewriting...</span>
+                </div>
+            </div>
+
+            <!-- Qualifications -->
+            <div class="section-card" id="sectionQualifications">
+                <div class="section-card-header">
+                    <h3>Qualifications</h3>
+                    <div class="rewrite-controls">
+                        <select id="rewriteToneQualifications">
+                            <option value="">AI Rewrite...</option>
+                            <option value="concise">More concise</option>
+                            <option value="detailed">More detailed</option>
+                            <option value="enthusiastic">More enthusiastic</option>
+                            <option value="formal">More formal</option>
+                        </select>
+                        <button class="btn-small" onclick="rewriteSection('qualifications')" id="rewriteBtnQualifications">Rewrite</button>
+                    </div>
+                </div>
+                <textarea id="editQualifications" rows="8"></textarea>
+                <div class="rewriting-indicator" id="rewritingQualifications">
+                    <div class="mini-spinner"></div>
+                    <span>Rewriting...</span>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(2)">&larr; Back</button>
+                <button class="btn" onclick="saveEditsAndAdvance()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Step 5: Compensation & Benefits          -->
+        <!-- ======================================== -->
+        <div id="step5" class="step">
+            <h2>Compensation &amp; Benefits</h2>
+            <p class="step-description">Add salary details and select the benefits to include.</p>
+
+            <!-- Compensation -->
+            <div class="comp-section">
+                <h3>Compensation</h3>
+                <div class="salary-row">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="salaryMin">Salary Minimum</label>
+                        <div class="salary-input-wrap">
+                            <span class="dollar-sign">$</span>
+                            <input type="number" id="salaryMin" placeholder="e.g. 90000" min="0" step="1000">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="salaryMax">Salary Maximum</label>
+                        <div class="salary-input-wrap">
+                            <span class="dollar-sign">$</span>
+                            <input type="number" id="salaryMax" placeholder="e.g. 130000" min="0" step="1000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-group" style="margin-bottom:16px;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="includeEquity">
+                        Include equity/stock options
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="includeBonus">
+                        Include bonus structure
+                    </label>
+                </div>
+
+                <div class="form-group" style="margin-bottom:0;">
+                    <label for="compNotes">Additional Compensation Details <span style="color:#9ca3af; font-weight:400;">(optional)</span></label>
+                    <textarea id="compNotes" rows="3" placeholder="Any additional compensation details..." style="min-height:70px;"></textarea>
+                </div>
+            </div>
+
+            <!-- Benefits -->
+            <div class="comp-section">
+                <h3>Standard Benefits</h3>
+                <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">(uncheck any that don't apply)</p>
+                <div class="benefits-list" id="benefitsList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(4)">&larr; Back</button>
+                <button class="btn" onclick="goToStep(6)">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Step 6: Preview                          -->
+        <!-- ======================================== -->
+        <div id="step6" class="step">
+            <h2>Preview</h2>
+            <p class="step-description">Review the complete job description before exporting.</p>
+
+            <div class="jd-preview" id="jdPreview">
+                <!-- Rendered by JS -->
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="goToStep(5)">&larr; Back</button>
+                <button class="btn btn-green" onclick="goToStep(7)">Copy &amp; Export &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- Step 7: Copy & Export                    -->
+        <!-- ======================================== -->
+        <div id="step7" class="step">
+            <h2>Copy &amp; Export</h2>
+            <p class="step-description">Your job description is ready. Choose how to share it.</p>
+
+            <div class="export-card">
+                <h3>Export Your Job Description</h3>
+                <p>Choose a format to copy or download your finished JD.</p>
+
+                <div class="export-actions">
+                    <button class="export-btn" onclick="copyAsText()">
+                        <div class="export-icon">
+                            <svg width="24" height="24" fill="none" stroke="#018181" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                        </div>
+                        <span class="export-label">Copy as Text</span>
+                        <span class="export-desc">Plain text for any platform</span>
+                    </button>
+                    <button class="export-btn" onclick="copyAsHTML()">
+                        <div class="export-icon">
+                            <svg width="24" height="24" fill="none" stroke="#018181" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        </div>
+                        <span class="export-label">Copy as HTML</span>
+                        <span class="export-desc">Formatted for email or web</span>
+                    </button>
+                    <button class="export-btn" onclick="downloadAsTxt()">
+                        <div class="export-icon">
+                            <svg width="24" height="24" fill="none" stroke="#018181" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <span class="export-label">Download .txt</span>
+                        <span class="export-desc">Save as a text file</span>
+                    </button>
+                </div>
+
+                <div class="copy-feedback" id="copyFeedback">
+                    <svg width="18" height="18" fill="none" stroke="#059669" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span id="copyFeedbackText">Copied!</span>
+                </div>
+            </div>
+
+            <div class="new-jd-section">
+                <button class="btn btn-orange" onclick="startOver()">Start New Job Description</button>
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+
+    <!-- ====================================================== -->
+    <!-- JavaScript                                             -->
+    <!-- ====================================================== -->
+    <script>
+    (function() {
+        'use strict';
+
+        // ──────────────────────────────────────
+        // Constants
+        // ──────────────────────────────────────
+        const API_BASE = window.location.origin;
+        const totalSteps = 7;
+
+        const STEP_LABELS = {
+            1: 'Role Basics',
+            2: 'Role Details',
+            3: 'Generating...',
+            4: 'Review & Edit',
+            5: 'Compensation & Benefits',
+            6: 'Preview',
+            7: 'Copy & Export'
+        };
+
+        // ──────────────────────────────────────
+        // State
+        // ──────────────────────────────────────
+        let currentStep = 1;
+
+        let roleData = {
+            title: '',
+            department: '',
+            reports_to: '',
+            location: '',
+            is_remote: false,
+            is_hybrid: false
+        };
+
+        let notes = '';
+        let experienceLevel = 'mid';
+        let step2Mode = 'scratch'; // 'scratch' or 'adapt'
+
+        let generatedSections = {
+            about: '',
+            responsibilities: '',
+            qualifications: ''
+        };
+
+        let compensation = {
+            salary_min: '',
+            salary_max: '',
+            include_equity: false,
+            include_bonus: false,
+            comp_notes: ''
+        };
+
+        let selectedBenefits = [];
+        let companyDescription = '';
+
+        // Config loaded from API
+        let departments = [];
+        let experienceLevels = [];
+        let standardBenefits = [];
+
+        // ──────────────────────────────────────
+        // Initialize
+        // ──────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
+            initUserGreeting();
+            loadConfig();
+            showStep(1);
+        });
+
+        function initUserGreeting() {
+            var greetingEl = document.getElementById('userGreeting');
+            if (window.AUTH_USER && window.AUTH_USER.name) {
+                greetingEl.textContent = 'Hi, ' + window.AUTH_USER.name;
+            } else if (window.AUTH_USER && window.AUTH_USER.email) {
+                greetingEl.textContent = 'Hi, ' + window.AUTH_USER.email.split('@')[0];
+            }
+            // Set BritePulse user for feedback attribution
+            if (window.AUTH_USER && window.BritePulse) {
+                window.BritePulse.getInstance()?.setUser({
+                    email: window.AUTH_USER.email,
+                    id: window.AUTH_USER.email
+                });
+            }
+        }
+
+        // ──────────────────────────────────────
+        // Load Config from API
+        // ──────────────────────────────────────
+        function loadConfig() {
+            fetch(API_BASE + '/api/config')
+                .then(function(res) {
+                    if (!res.ok) throw new Error('Config fetch failed');
+                    return res.json();
+                })
+                .then(function(data) {
+                    departments = data.departments || [];
+                    experienceLevels = data.experience_levels || [];
+                    standardBenefits = data.standard_benefits || [];
+                    companyDescription = data.company_description || '';
+
+                    populateDepartments();
+                    populateExperienceLevels();
+                    populateBenefits();
+                })
+                .catch(function(err) {
+                    console.error('Failed to load config:', err);
+                    // Fallback defaults
+                    departments = ['Engineering', 'Product', 'Marketing', 'Sales', 'Customer Success', 'Operations', 'Finance', 'People / HR', 'Legal', 'Data / Analytics', 'Design', 'Executive'];
+                    experienceLevels = [
+                        { value: 'entry', label: 'Entry Level (0-2 years)' },
+                        { value: 'mid', label: 'Mid Level (3-5 years)' },
+                        { value: 'senior', label: 'Senior (6-10 years)' },
+                        { value: 'lead', label: 'Lead / Staff (8-12+ years)' },
+                        { value: 'director', label: 'Director (10+ years)' },
+                        { value: 'vp', label: 'VP / Executive (12+ years)' }
+                    ];
+                    standardBenefits = [
+                        'Competitive salary and performance bonuses',
+                        'Comprehensive health, dental, and vision insurance',
+                        '401(k) with company match',
+                        'Flexible PTO policy',
+                        'Remote and hybrid work options',
+                        'Professional development budget',
+                        'Company-sponsored team events and retreats',
+                        'Parental leave',
+                        'Life and disability insurance',
+                        'Employee wellness programs'
+                    ];
+                    companyDescription = 'BriteCo is a leading insurtech company revolutionizing how people protect their most valued possessions. We provide technology-driven insurance solutions for jewelry, watches, and special events. Our platform combines modern technology with exceptional customer service to deliver seamless coverage experiences.\n\nFounded with a mission to modernize specialty insurance, BriteCo partners with thousands of jewelers across North America and serves hundreds of thousands of policyholders. Our team is passionate about innovation, customer-first thinking, and building products that truly matter.\n\nAt BriteCo, we believe in fostering a collaborative, inclusive workplace where every team member can make a real impact. We offer competitive compensation, comprehensive benefits, and the opportunity to shape the future of insurtech.';
+
+                    populateDepartments();
+                    populateExperienceLevels();
+                    populateBenefits();
+                });
+        }
+
+        function populateDepartments() {
+            var select = document.getElementById('department');
+            departments.forEach(function(dept) {
+                var opt = document.createElement('option');
+                opt.value = dept;
+                opt.textContent = dept;
+                select.appendChild(opt);
+            });
+        }
+
+        function populateExperienceLevels() {
+            var select = document.getElementById('experienceLevel');
+            experienceLevels.forEach(function(level) {
+                var opt = document.createElement('option');
+                opt.value = level.value;
+                opt.textContent = level.label;
+                select.appendChild(opt);
+            });
+        }
+
+        function populateBenefits() {
+            var container = document.getElementById('benefitsList');
+            container.innerHTML = '';
+            selectedBenefits = standardBenefits.slice(); // all checked by default
+
+            standardBenefits.forEach(function(benefit, index) {
+                var item = document.createElement('label');
+                item.className = 'benefit-item checked';
+                item.innerHTML = '<input type="checkbox" checked data-benefit-index="' + index + '" onchange="window._briteRoles.toggleBenefit(this, ' + index + ')">' +
+                    '<span>' + escapeHTML(benefit) + '</span>';
+                container.appendChild(item);
+            });
+        }
+
+        // ──────────────────────────────────────
+        // Step Navigation
+        // ──────────────────────────────────────
+        function goToStep(step) {
+            if (step < 1 || step > totalSteps) return;
+
+            // Before leaving current step, collect state
+            collectStepState(currentStep);
+
+            currentStep = step;
+            showStep(step);
+
+            // After entering step, initialize step-specific UI
+            initStepUI(step);
+        }
+
+        function showStep(step) {
+            for (var i = 1; i <= totalSteps; i++) {
+                var el = document.getElementById('step' + i);
+                if (el) {
+                    el.classList.remove('active');
+                }
+            }
+            var activeEl = document.getElementById('step' + step);
+            if (activeEl) {
+                activeEl.classList.add('active');
+            }
+            updateProgressBar(step);
+
+            // Show/hide start over button
+            var startOverBtn = document.getElementById('startOverBtn');
+            if (step > 1) {
+                startOverBtn.style.display = 'inline-block';
+            } else {
+                startOverBtn.style.display = 'none';
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgressBar(step) {
+            var pct = Math.round((step / totalSteps) * 100);
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressStepText').textContent = 'Step ' + step + ' of ' + totalSteps;
+            document.getElementById('progressLabel').textContent = STEP_LABELS[step] || '';
+        }
+
+        function collectStepState(step) {
+            if (step === 1) {
+                roleData.title = document.getElementById('roleTitle').value.trim();
+                roleData.department = document.getElementById('department').value;
+                roleData.reports_to = document.getElementById('reportsTo').value.trim();
+                roleData.location = document.getElementById('location').value.trim();
+                roleData.is_remote = document.getElementById('isRemote').checked;
+                roleData.is_hybrid = document.getElementById('isHybrid').checked;
+            } else if (step === 2) {
+                experienceLevel = document.getElementById('experienceLevel').value || 'mid';
+                notes = document.getElementById('roleNotes').value.trim();
+            } else if (step === 4) {
+                generatedSections.about = document.getElementById('editAbout').value;
+                generatedSections.responsibilities = document.getElementById('editResponsibilities').value;
+                generatedSections.qualifications = document.getElementById('editQualifications').value;
+            } else if (step === 5) {
+                compensation.salary_min = document.getElementById('salaryMin').value;
+                compensation.salary_max = document.getElementById('salaryMax').value;
+                compensation.include_equity = document.getElementById('includeEquity').checked;
+                compensation.include_bonus = document.getElementById('includeBonus').checked;
+                compensation.comp_notes = document.getElementById('compNotes').value.trim();
+
+                // Collect checked benefits
+                selectedBenefits = [];
+                var checkboxes = document.querySelectorAll('#benefitsList input[type="checkbox"]');
+                checkboxes.forEach(function(cb) {
+                    if (cb.checked) {
+                        var idx = parseInt(cb.getAttribute('data-benefit-index'));
+                        if (standardBenefits[idx]) {
+                            selectedBenefits.push(standardBenefits[idx]);
+                        }
+                    }
+                });
+            }
+        }
+
+        function initStepUI(step) {
+            if (step === 4) {
+                // Populate editable textareas
+                document.getElementById('editAbout').value = generatedSections.about;
+                document.getElementById('editResponsibilities').value = generatedSections.responsibilities;
+                document.getElementById('editQualifications').value = generatedSections.qualifications;
+            } else if (step === 6) {
+                // Collect state from step 5 first
+                collectStepState(5);
+                renderPreview();
+            }
+        }
+
+        // ──────────────────────────────────────
+        // Step 1: Validation
+        // ──────────────────────────────────────
+        function validateStep1() {
+            var title = document.getElementById('roleTitle').value.trim();
+            document.getElementById('step1NextBtn').disabled = (title.length === 0);
+        }
+
+        // ──────────────────────────────────────
+        // Step 1: Work Arrangement (mutually exclusive)
+        // ──────────────────────────────────────
+        function handleWorkArrangement(type) {
+            var remoteEl = document.getElementById('isRemote');
+            var hybridEl = document.getElementById('isHybrid');
+            if (type === 'remote' && remoteEl.checked) {
+                hybridEl.checked = false;
+            } else if (type === 'hybrid' && hybridEl.checked) {
+                remoteEl.checked = false;
+            }
+        }
+
+        // ──────────────────────────────────────
+        // Step 2: Character count
+        // ──────────────────────────────────────
+        function updateCharCount() {
+            var text = document.getElementById('roleNotes').value;
+            var count = text.length;
+            document.getElementById('charCount').textContent = count + ' character' + (count !== 1 ? 's' : '');
+        }
+
+        // ──────────────────────────────────────
+        // Step 2: Mode Toggle (Scratch vs Adapt)
+        // ──────────────────────────────────────
+        function setStep2Mode(mode) {
+            step2Mode = mode;
+            var scratchEl = document.getElementById('scratchMode');
+            var adaptEl = document.getElementById('adaptMode');
+            var scratchBtn = document.getElementById('modeFromScratch');
+            var adaptBtn = document.getElementById('modeAdapt');
+
+            if (mode === 'scratch') {
+                scratchEl.style.display = 'block';
+                adaptEl.style.display = 'none';
+                scratchBtn.style.background = '#018181';
+                scratchBtn.style.color = 'white';
+                adaptBtn.style.background = 'white';
+                adaptBtn.style.color = '#374151';
+            } else {
+                scratchEl.style.display = 'none';
+                adaptEl.style.display = 'block';
+                adaptBtn.style.background = '#018181';
+                adaptBtn.style.color = 'white';
+                scratchBtn.style.background = 'white';
+                scratchBtn.style.color = '#374151';
+            }
+        }
+
+        // ──────────────────────────────────────
+        // Step 2/3: Generate Job Description
+        // ──────────────────────────────────────
+        function generateJobDescription() {
+            // Collect state from steps 1 & 2
+            collectStepState(1);
+            collectStepState(2);
+
+            // Move to loading step
+            currentStep = 3;
+            showStep(3);
+
+            var payload = {
+                title: roleData.title,
+                department: roleData.department,
+                reports_to: roleData.reports_to,
+                location: roleData.location,
+                is_remote: roleData.is_remote,
+                is_hybrid: roleData.is_hybrid,
+                experience_level: experienceLevel,
+                notes: notes
+            };
+
+            // Choose endpoint based on mode
+            var endpoint = '/api/generate-jd';
+            if (step2Mode === 'adapt') {
+                endpoint = '/api/adapt-jd';
+                payload.original_jd = document.getElementById('existingJD').value.trim();
+                payload.notes = document.getElementById('adaptNotes').value.trim();
+                if (!payload.original_jd) {
+                    alert('Please paste an existing job description to adapt.');
+                    currentStep = 2;
+                    showStep(2);
+                    return;
+                }
+            }
+
+            fetch(API_BASE + endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error('Generation failed');
+                return res.json();
+            })
+            .then(function(data) {
+                // Parse the generated markdown into sections
+                var content = data.job_description || data.content || data.generated || data.text || '';
+                parseSectionsFromMarkdown(content);
+
+                // Advance to review
+                currentStep = 4;
+                showStep(4);
+                initStepUI(4);
+            })
+            .catch(function(err) {
+                console.error('Generation error:', err);
+                alert('Failed to generate job description. Please try again.');
+                currentStep = 2;
+                showStep(2);
+            });
+        }
+
+        // ──────────────────────────────────────
+        // Parse Markdown into Sections
+        // ──────────────────────────────────────
+        function parseSectionsFromMarkdown(md) {
+            // Split on ## headers
+            var sections = {};
+            var currentKey = null;
+            var currentContent = [];
+
+            var lines = md.split('\n');
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var headerMatch = line.match(/^##\s+(.+)/);
+                if (headerMatch) {
+                    // Save previous section
+                    if (currentKey) {
+                        sections[currentKey] = currentContent.join('\n').trim();
+                    }
+                    // Determine which section
+                    var headerText = headerMatch[1].toLowerCase().trim();
+                    if (headerText.indexOf('role description') !== -1 || (headerText.indexOf('about') !== -1 && headerText.indexOf('role') !== -1) || headerText.indexOf('role overview') !== -1) {
+                        currentKey = 'about';
+                    } else if (headerText.indexOf('responsibilities') !== -1 || headerText.indexOf('you\'ll do') !== -1 || headerText.indexOf('you will do') !== -1) {
+                        currentKey = 'responsibilities';
+                    } else if (headerText.indexOf('qualifications') !== -1 || headerText.indexOf('requirements') !== -1 || headerText.indexOf('you\'ll bring') !== -1 || headerText.indexOf('you will bring') !== -1) {
+                        currentKey = 'qualifications';
+                    } else {
+                        currentKey = 'other_' + i;
+                    }
+                    currentContent = [];
+                } else {
+                    currentContent.push(line);
+                }
+            }
+            // Save last section
+            if (currentKey) {
+                sections[currentKey] = currentContent.join('\n').trim();
+            }
+
+            generatedSections.about = sections['about'] || '';
+            generatedSections.responsibilities = sections['responsibilities'] || '';
+            generatedSections.qualifications = sections['qualifications'] || '';
+        }
+
+        // ──────────────────────────────────────
+        // Step 4: AI Rewrite Section
+        // ──────────────────────────────────────
+        function rewriteSection(sectionKey) {
+            // Map section keys to element IDs
+            var idMap = {
+                about: 'About',
+                responsibilities: 'Responsibilities',
+                qualifications: 'Qualifications'
+            };
+            var idSuffix = idMap[sectionKey];
+            if (!idSuffix) return;
+
+            var toneSelect = document.getElementById('rewriteTone' + idSuffix);
+            var tone = toneSelect.value;
+            if (!tone) {
+                alert('Please select a tone from the dropdown first.');
+                return;
+            }
+
+            var textarea = document.getElementById('edit' + idSuffix);
+            var content = textarea.value.trim();
+            if (!content) return;
+
+            // Show loading indicator
+            var indicator = document.getElementById('rewriting' + idSuffix);
+            indicator.style.display = 'flex';
+            var rewriteBtn = document.getElementById('rewriteBtn' + idSuffix);
+            rewriteBtn.disabled = true;
+
+            fetch(API_BASE + '/api/rewrite-section', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    section: sectionKey,
+                    content: content,
+                    tone: tone
+                })
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error('Rewrite failed');
+                return res.json();
+            })
+            .then(function(data) {
+                var rewritten = data.rewritten_content || data.content || data.rewritten || data.text || content;
+                textarea.value = rewritten;
+                generatedSections[sectionKey] = rewritten;
+
+                // Reset UI
+                indicator.style.display = 'none';
+                rewriteBtn.disabled = false;
+                toneSelect.value = '';
+            })
+            .catch(function(err) {
+                console.error('Rewrite error:', err);
+                indicator.style.display = 'none';
+                rewriteBtn.disabled = false;
+                alert('Rewrite failed. Please try again.');
+            });
+        }
+
+        // ──────────────────────────────────────
+        // Step 4: Save and advance
+        // ──────────────────────────────────────
+        function saveEditsAndAdvance() {
+            collectStepState(4);
+            goToStep(5);
+        }
+
+        // ──────────────────────────────────────
+        // Step 5: Toggle Benefit
+        // ──────────────────────────────────────
+        function toggleBenefit(cb, index) {
+            var item = cb.closest('.benefit-item');
+            if (cb.checked) {
+                item.classList.add('checked');
+            } else {
+                item.classList.remove('checked');
+            }
+        }
+
+        // ──────────────────────────────────────
+        // Step 6: Render Preview
+        // ──────────────────────────────────────
+        function renderPreview() {
+            var html = '';
+
+            // Title
+            html += '<h1>' + escapeHTML(roleData.title) + '</h1>';
+
+            // Meta row
+            html += '<div class="jd-meta">';
+            if (roleData.department) {
+                html += '<span class="jd-meta-item"><strong>Department:</strong>&nbsp;' + escapeHTML(roleData.department) + '</span>';
+            }
+            if (roleData.reports_to) {
+                html += '<span class="jd-meta-item"><strong>Reports to:</strong>&nbsp;' + escapeHTML(roleData.reports_to) + '</span>';
+            }
+            if (roleData.location) {
+                html += '<span class="jd-meta-item"><strong>Location:</strong>&nbsp;' + escapeHTML(roleData.location) + '</span>';
+            }
+            if (roleData.is_remote) {
+                html += '<span class="jd-badge">Remote</span>';
+            }
+            if (roleData.is_hybrid) {
+                html += '<span class="jd-badge hybrid">Hybrid</span>';
+            }
+            html += '</div>';
+
+            // Role Description
+            if (generatedSections.about) {
+                html += '<div class="jd-section">';
+                html += '<h2>Role Description</h2>';
+                html += renderMarkdownContent(generatedSections.about);
+                html += '</div>';
+            }
+
+            // Key Responsibilities
+            if (generatedSections.responsibilities) {
+                html += '<div class="jd-section">';
+                html += '<h2>Key Responsibilities</h2>';
+                html += renderMarkdownContent(generatedSections.responsibilities);
+                html += '</div>';
+            }
+
+            // Qualifications
+            if (generatedSections.qualifications) {
+                html += '<div class="jd-section">';
+                html += '<h2>Qualifications</h2>';
+                html += renderMarkdownContent(generatedSections.qualifications);
+                html += '</div>';
+            }
+
+            // Compensation
+            var hasSalary = compensation.salary_min || compensation.salary_max;
+            var hasCompExtras = compensation.include_equity || compensation.include_bonus || compensation.comp_notes;
+            if (hasSalary || hasCompExtras) {
+                html += '<hr class="jd-divider">';
+                html += '<div class="jd-section">';
+                html += '<h2>Compensation</h2>';
+                var compLines = [];
+                if (compensation.salary_min && compensation.salary_max) {
+                    compLines.push('Salary range: ' + formatCurrency(compensation.salary_min) + ' - ' + formatCurrency(compensation.salary_max));
+                } else if (compensation.salary_min) {
+                    compLines.push('Starting salary: ' + formatCurrency(compensation.salary_min) + '+');
+                } else if (compensation.salary_max) {
+                    compLines.push('Salary up to: ' + formatCurrency(compensation.salary_max));
+                }
+                if (compensation.include_equity) {
+                    compLines.push('Equity/stock options included');
+                }
+                if (compensation.include_bonus) {
+                    compLines.push('Performance bonus structure included');
+                }
+                if (compLines.length > 0) {
+                    html += '<ul>';
+                    compLines.forEach(function(line) {
+                        html += '<li>' + escapeHTML(line) + '</li>';
+                    });
+                    html += '</ul>';
+                }
+                if (compensation.comp_notes) {
+                    html += '<p style="margin-top:8px;">' + escapeHTML(compensation.comp_notes) + '</p>';
+                }
+                html += '</div>';
+            }
+
+            // Benefits
+            if (selectedBenefits.length > 0) {
+                html += '<div class="jd-section">';
+                html += '<h2>Benefits</h2>';
+                html += '<ul>';
+                selectedBenefits.forEach(function(b) {
+                    html += '<li>' + escapeHTML(b) + '</li>';
+                });
+                html += '</ul>';
+                html += '</div>';
+            }
+
+            // About BriteCo
+            if (companyDescription) {
+                html += '<hr class="jd-divider">';
+                html += '<div class="jd-section about-company">';
+                html += '<h2>About BriteCo</h2>';
+                var paragraphs = companyDescription.split('\n\n');
+                paragraphs.forEach(function(p) {
+                    if (p.trim()) {
+                        html += '<p>' + escapeHTML(p.trim()) + '</p>';
+                    }
+                });
+                html += '</div>';
+            }
+
+            document.getElementById('jdPreview').innerHTML = html;
+        }
+
+        // ──────────────────────────────────────
+        // Markdown-ish to HTML
+        // ──────────────────────────────────────
+        function renderMarkdownContent(text) {
+            if (!text) return '';
+            var lines = text.split('\n');
+            var html = '';
+            var inList = false;
+            var paragraphLines = [];
+
+            function flushParagraph() {
+                if (paragraphLines.length > 0) {
+                    var pText = paragraphLines.join(' ').trim();
+                    if (pText) {
+                        html += '<p>' + formatInlineMarkdown(escapeHTML(pText)) + '</p>';
+                    }
+                    paragraphLines = [];
+                }
+            }
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var trimmed = line.trim();
+
+                // Bullet point line
+                if (/^[-*]\s+/.test(trimmed)) {
+                    flushParagraph();
+                    if (!inList) {
+                        html += '<ul>';
+                        inList = true;
+                    }
+                    var bulletText = trimmed.replace(/^[-*]\s+/, '');
+                    html += '<li>' + formatInlineMarkdown(escapeHTML(bulletText)) + '</li>';
+                }
+                // Numbered list
+                else if (/^\d+[.)]\s+/.test(trimmed)) {
+                    flushParagraph();
+                    if (!inList) {
+                        html += '<ul>';
+                        inList = true;
+                    }
+                    var numberedText = trimmed.replace(/^\d+[.)]\s+/, '');
+                    html += '<li>' + formatInlineMarkdown(escapeHTML(numberedText)) + '</li>';
+                }
+                // Empty line
+                else if (trimmed === '') {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    flushParagraph();
+                }
+                // Regular text
+                else {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    paragraphLines.push(trimmed);
+                }
+            }
+
+            if (inList) {
+                html += '</ul>';
+            }
+            flushParagraph();
+
+            return html;
+        }
+
+        function formatInlineMarkdown(text) {
+            // Bold: **text** or __text__
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            // Italic: *text* or _text_
+            text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            text = text.replace(/_(.+?)_/g, '<em>$1</em>');
+            return text;
+        }
+
+        // ──────────────────────────────────────
+        // Step 7: Copy & Export Functions
+        // ──────────────────────────────────────
+        function copyAsText() {
+            var text = buildPlainText();
+            copyToClipboard(text, 'Copied as plain text!');
+        }
+
+        function copyAsHTML() {
+            var html = buildExportHTML();
+            copyToClipboard(html, 'Copied as HTML!');
+        }
+
+        function downloadAsTxt() {
+            var text = buildPlainText();
+            var filename = roleData.title
+                ? roleData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '') + '-jd.txt'
+                : 'job-description.txt';
+            var blob = new Blob([text], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showCopyFeedback('Downloaded!');
+        }
+
+        function buildPlainText() {
+            var lines = [];
+
+            lines.push(roleData.title.toUpperCase());
+            lines.push('='.repeat(roleData.title.length));
+            lines.push('');
+
+            var metaParts = [];
+            if (roleData.department) metaParts.push('Department: ' + roleData.department);
+            if (roleData.reports_to) metaParts.push('Reports to: ' + roleData.reports_to);
+            if (roleData.location) metaParts.push('Location: ' + roleData.location);
+            if (roleData.is_remote) metaParts.push('Remote');
+            if (roleData.is_hybrid) metaParts.push('Hybrid');
+            if (metaParts.length > 0) {
+                lines.push(metaParts.join('  |  '));
+                lines.push('');
+            }
+
+            if (generatedSections.about) {
+                lines.push('ROLE DESCRIPTION');
+                lines.push('-'.repeat(16));
+                lines.push(cleanMarkdownToText(generatedSections.about));
+                lines.push('');
+            }
+
+            if (generatedSections.responsibilities) {
+                lines.push('KEY RESPONSIBILITIES');
+                lines.push('-'.repeat(20));
+                lines.push(cleanMarkdownToText(generatedSections.responsibilities));
+                lines.push('');
+            }
+
+            if (generatedSections.qualifications) {
+                lines.push('QUALIFICATIONS');
+                lines.push('-'.repeat(14));
+                lines.push(cleanMarkdownToText(generatedSections.qualifications));
+                lines.push('');
+            }
+
+            // Compensation
+            var hasSalary = compensation.salary_min || compensation.salary_max;
+            var hasCompExtras = compensation.include_equity || compensation.include_bonus || compensation.comp_notes;
+            if (hasSalary || hasCompExtras) {
+                lines.push('COMPENSATION');
+                lines.push('-'.repeat(12));
+                if (compensation.salary_min && compensation.salary_max) {
+                    lines.push('Salary range: ' + formatCurrency(compensation.salary_min) + ' - ' + formatCurrency(compensation.salary_max));
+                } else if (compensation.salary_min) {
+                    lines.push('Starting salary: ' + formatCurrency(compensation.salary_min) + '+');
+                } else if (compensation.salary_max) {
+                    lines.push('Salary up to: ' + formatCurrency(compensation.salary_max));
+                }
+                if (compensation.include_equity) lines.push('- Equity/stock options included');
+                if (compensation.include_bonus) lines.push('- Performance bonus structure included');
+                if (compensation.comp_notes) lines.push(compensation.comp_notes);
+                lines.push('');
+            }
+
+            // Benefits
+            if (selectedBenefits.length > 0) {
+                lines.push('BENEFITS');
+                lines.push('-'.repeat(8));
+                selectedBenefits.forEach(function(b) {
+                    lines.push('- ' + b);
+                });
+                lines.push('');
+            }
+
+            // About BriteCo
+            if (companyDescription) {
+                lines.push('ABOUT BRITECO');
+                lines.push('-'.repeat(13));
+                lines.push(companyDescription);
+                lines.push('');
+            }
+
+            return lines.join('\n');
+        }
+
+        function cleanMarkdownToText(text) {
+            // Strip **bold** and *italic* markers
+            var clean = text.replace(/\*\*(.+?)\*\*/g, '$1');
+            clean = clean.replace(/__(.+?)__/g, '$1');
+            clean = clean.replace(/\*(.+?)\*/g, '$1');
+            clean = clean.replace(/_(.+?)_/g, '$1');
+            return clean;
+        }
+
+        function buildExportHTML() {
+            var html = '';
+            html += '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escapeHTML(roleData.title) + ' - Job Description</title>';
+            html += '<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;max-width:700px;margin:40px auto;padding:0 20px;color:#333;line-height:1.6;}';
+            html += 'h1{color:#272d3f;border-bottom:3px solid #018181;padding-bottom:12px;}';
+            html += 'h2{color:#018181;margin-top:28px;}';
+            html += '.meta{color:#666;font-size:14px;margin-bottom:24px;}';
+            html += '.badge{display:inline-block;background:#018181;color:#fff;padding:2px 10px;border-radius:10px;font-size:12px;font-weight:600;}';
+            html += '.badge.hybrid{background:#FE8916;}';
+            html += 'ul{padding-left:20px;}li{margin-bottom:6px;}';
+            html += '.about-company{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;margin-top:32px;}';
+            html += '</style></head><body>';
+
+            html += '<h1>' + escapeHTML(roleData.title) + '</h1>';
+
+            html += '<div class="meta">';
+            if (roleData.department) html += '<strong>Department:</strong> ' + escapeHTML(roleData.department) + ' &nbsp;&bull;&nbsp; ';
+            if (roleData.reports_to) html += '<strong>Reports to:</strong> ' + escapeHTML(roleData.reports_to) + ' &nbsp;&bull;&nbsp; ';
+            if (roleData.location) html += '<strong>Location:</strong> ' + escapeHTML(roleData.location) + ' ';
+            if (roleData.is_remote) html += '<span class="badge">Remote</span> ';
+            if (roleData.is_hybrid) html += '<span class="badge hybrid">Hybrid</span> ';
+            html += '</div>';
+
+            if (generatedSections.about) {
+                html += '<h2>Role Description</h2>';
+                html += renderMarkdownContent(generatedSections.about);
+            }
+            if (generatedSections.responsibilities) {
+                html += '<h2>Key Responsibilities</h2>';
+                html += renderMarkdownContent(generatedSections.responsibilities);
+            }
+            if (generatedSections.qualifications) {
+                html += '<h2>Qualifications</h2>';
+                html += renderMarkdownContent(generatedSections.qualifications);
+            }
+
+            var hasSalary = compensation.salary_min || compensation.salary_max;
+            var hasCompExtras = compensation.include_equity || compensation.include_bonus || compensation.comp_notes;
+            if (hasSalary || hasCompExtras) {
+                html += '<h2>Compensation</h2><ul>';
+                if (compensation.salary_min && compensation.salary_max) {
+                    html += '<li>Salary range: ' + formatCurrency(compensation.salary_min) + ' - ' + formatCurrency(compensation.salary_max) + '</li>';
+                } else if (compensation.salary_min) {
+                    html += '<li>Starting salary: ' + formatCurrency(compensation.salary_min) + '+</li>';
+                } else if (compensation.salary_max) {
+                    html += '<li>Salary up to: ' + formatCurrency(compensation.salary_max) + '</li>';
+                }
+                if (compensation.include_equity) html += '<li>Equity/stock options included</li>';
+                if (compensation.include_bonus) html += '<li>Performance bonus structure included</li>';
+                html += '</ul>';
+                if (compensation.comp_notes) html += '<p>' + escapeHTML(compensation.comp_notes) + '</p>';
+            }
+
+            if (selectedBenefits.length > 0) {
+                html += '<h2>Benefits</h2><ul>';
+                selectedBenefits.forEach(function(b) {
+                    html += '<li>' + escapeHTML(b) + '</li>';
+                });
+                html += '</ul>';
+            }
+
+            if (companyDescription) {
+                html += '<div class="about-company"><h2>About BriteCo</h2>';
+                companyDescription.split('\n\n').forEach(function(p) {
+                    if (p.trim()) html += '<p>' + escapeHTML(p.trim()) + '</p>';
+                });
+                html += '</div>';
+            }
+
+            html += '</body></html>';
+            return html;
+        }
+
+        function copyToClipboard(text, message) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showCopyFeedback(message);
+                }).catch(function() {
+                    fallbackCopy(text, message);
+                });
+            } else {
+                fallbackCopy(text, message);
+            }
+        }
+
+        function fallbackCopy(text, message) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showCopyFeedback(message);
+            } catch (e) {
+                showCopyFeedback('Copy failed - please copy manually.');
+            }
+            document.body.removeChild(ta);
+        }
+
+        function showCopyFeedback(message) {
+            var el = document.getElementById('copyFeedback');
+            var textEl = document.getElementById('copyFeedbackText');
+            textEl.textContent = message;
+            el.classList.add('show');
+
+            clearTimeout(el._fadeTimer);
+            el._fadeTimer = setTimeout(function() {
+                el.classList.remove('show');
+            }, 3000);
+        }
+
+        // ──────────────────────────────────────
+        // Start Over / Reset
+        // ──────────────────────────────────────
+        function startOver() {
+            roleData = { title: '', department: '', reports_to: '', location: '', is_remote: false, is_hybrid: false };
+            notes = '';
+            experienceLevel = 'mid';
+            step2Mode = 'scratch';
+            generatedSections = { about: '', responsibilities: '', qualifications: '' };
+            compensation = { salary_min: '', salary_max: '', include_equity: false, include_bonus: false, comp_notes: '' };
+            selectedBenefits = standardBenefits.slice();
+
+            // Reset form fields
+            document.getElementById('roleTitle').value = '';
+            document.getElementById('department').value = '';
+            document.getElementById('reportsTo').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('isRemote').checked = false;
+            document.getElementById('isHybrid').checked = false;
+            document.getElementById('experienceLevel').value = '';
+            document.getElementById('roleNotes').value = '';
+            document.getElementById('charCount').textContent = '0 characters';
+            document.getElementById('existingJD').value = '';
+            document.getElementById('adaptNotes').value = '';
+            setStep2Mode('scratch');
+            document.getElementById('salaryMin').value = '';
+            document.getElementById('salaryMax').value = '';
+            document.getElementById('includeEquity').checked = false;
+            document.getElementById('includeBonus').checked = false;
+            document.getElementById('compNotes').value = '';
+            document.getElementById('step1NextBtn').disabled = true;
+
+            // Reset benefit checkboxes
+            populateBenefits();
+
+            // Reset rewrite dropdowns
+            var rewriteIds = ['rewriteToneAbout', 'rewriteToneResponsibilities', 'rewriteToneQualifications'];
+            rewriteIds.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Hide copy feedback
+            var fb = document.getElementById('copyFeedback');
+            if (fb) fb.classList.remove('show');
+
+            // Go to step 1
+            currentStep = 1;
+            showStep(1);
+        }
+
+        // ──────────────────────────────────────
+        // Utility Functions
+        // ──────────────────────────────────────
+        function escapeHTML(str) {
+            if (!str) return '';
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        function formatCurrency(value) {
+            var num = parseInt(value, 10);
+            if (isNaN(num)) return '$0';
+            return '$' + num.toLocaleString('en-US');
+        }
+
+        // ──────────────────────────────────────
+        // Expose to global scope for onclick
+        // ──────────────────────────────────────
+        window._briteRoles = {
+            toggleBenefit: toggleBenefit
+        };
+        window.goToStep = goToStep;
+        window.setStep2Mode = setStep2Mode;
+        window.validateStep1 = validateStep1;
+        window.handleWorkArrangement = handleWorkArrangement;
+        window.updateCharCount = updateCharCount;
+        window.generateJobDescription = generateJobDescription;
+        window.rewriteSection = rewriteSection;
+        window.saveEditsAndAdvance = saveEditsAndAdvance;
+        window.copyAsText = copyAsText;
+        window.copyAsHTML = copyAsHTML;
+        window.downloadAsTxt = downloadAsTxt;
+        window.startOver = startOver;
+
+    })();
+    </script>
+</body>
+</html>
