@@ -46,10 +46,10 @@ STANDARD_BENEFITS = [
 # ──────────────────────────────────────────
 
 DEPARTMENTS = [
-    "Sales",
-    "Marketing",
     "Claims",
     "Customer Success",
+    "Marketing",
+    "Sales",
     "Underwriting",
 ]
 
