@@ -13,6 +13,9 @@ python-dotenv>=1.0.0
 # Anthropic (Claude)
 anthropic>=0.18.0
 
+# Google Cloud Storage (drafts & saved roles)
+google-cloud-storage>=2.14.0
+
 # Timezone
 pytz>=2024.1
 

@@ -663,6 +663,104 @@
         }
 
         /* ============================== */
+        /* Drafts & Saved Roles Sections  */
+        /* ============================== */
+        .drafts-section {
+            max-width: 1000px;
+            margin: 30px auto 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 35px 40px;
+            backdrop-filter: blur(10px);
+        }
+        .drafts-section h2 {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .drafts-section .section-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .drafts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .draft-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .draft-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border-color: #018181;
+        }
+        .draft-card h4 {
+            color: #018181;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .draft-card p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .draft-card .draft-badge {
+            display: inline-block;
+            background: #FE8916;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .draft-card .saved-badge {
+            display: inline-block;
+            background: #059669;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .draft-card .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .draft-card:hover .delete-btn { opacity: 0.7; }
+        .draft-card .delete-btn:hover { opacity: 1; }
+        .drafts-empty {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+        }
+        .drafts-empty .icon { font-size: 32px; margin-bottom: 8px; }
+
+        /* ============================== */
         /* Responsive                     */
         /* ============================== */
         @media (max-width: 700px) {
@@ -690,9 +788,9 @@
                 <button class="start-over-btn" id="startOverBtn" onclick="startOver()">Start Over</button>
             </div>
             <div class="header-content">
-                <div class="header-logo">BR</div>
+                <div class="header-logo">BT</div>
                 <div>
-                    <h1>BriteRoles</h1>
+                    <h1>BriteTalent</h1>
                     <div class="subtitle">Job Description Generator</div>
                 </div>
             </div>
@@ -726,9 +824,10 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="department">Department</label>
-                    <select id="department">
+                    <select id="department" onchange="handleDepartmentChange()">
                         <option value="">Select department...</option>
                     </select>
+                    <input type="text" id="departmentOther" placeholder="Enter department name..." style="display:none; margin-top:8px;">
                 </div>
                 <div class="form-group">
                     <label for="reportsTo">Reports To</label>
@@ -771,6 +870,7 @@
             <div style="display:flex; gap:0; margin-bottom:24px; border:2px solid #e5e7eb; border-radius:8px; overflow:hidden;">
                 <button id="modeFromScratch" class="btn-small" style="flex:1; border-radius:0; padding:10px 16px; font-size:14px; background:#018181; color:white; border:none; cursor:pointer;" onclick="setStep2Mode('scratch')">Create New</button>
                 <button id="modeAdapt" class="btn-small" style="flex:1; border-radius:0; padding:10px 16px; font-size:14px; background:white; color:#374151; border:none; cursor:pointer;" onclick="setStep2Mode('adapt')">Adapt Existing JD</button>
+                <button id="modeReuse" class="btn-small" style="flex:1; border-radius:0; padding:10px 16px; font-size:14px; background:white; color:#374151; border:none; cursor:pointer;" onclick="setStep2Mode('reuse')">Reuse Previous</button>
             </div>
 
             <div class="form-group">
@@ -802,6 +902,23 @@
                 <div class="form-group">
                     <label for="adaptNotes">Additional Notes <span style="color:#9ca3af; font-weight:400;">(optional)</span></label>
                     <textarea id="adaptNotes" rows="4" placeholder="Any changes you'd like made — different emphasis, added responsibilities, adjusted requirements..." style="min-height:80px;"></textarea>
+                </div>
+            </div>
+
+            <!-- Reuse Previous Role Mode -->
+            <div id="reuseMode" style="display:none;">
+                <div class="form-group">
+                    <label for="reuseRoleSelect">Select a Saved Role</label>
+                    <select id="reuseRoleSelect" onchange="onReuseRoleSelected()">
+                        <option value="">Select a saved role...</option>
+                    </select>
+                    <p class="helper-text">Choose a previously saved job description to reuse as a starting point.</p>
+                </div>
+                <div id="reusePreview" style="display:none;"></div>
+                <div class="form-group">
+                    <label for="reuseNotes">Modifications <span style="color:#9ca3af; font-weight:400;">(optional)</span></label>
+                    <textarea id="reuseNotes" rows="4" placeholder="Any changes you'd like made? Leave blank to reuse as-is without regenerating..." style="min-height:80px;"></textarea>
+                    <p class="helper-text">If left blank, the saved role will load directly — no AI regeneration needed.</p>
                 </div>
             </div>
 
@@ -838,8 +955,6 @@
                             <option value="">AI Rewrite...</option>
                             <option value="concise">More concise</option>
                             <option value="detailed">More detailed</option>
-                            <option value="enthusiastic">More enthusiastic</option>
-                            <option value="formal">More formal</option>
                         </select>
                         <button class="btn-small" onclick="rewriteSection('about')" id="rewriteBtnAbout">Rewrite</button>
                     </div>
@@ -860,8 +975,6 @@
                             <option value="">AI Rewrite...</option>
                             <option value="concise">More concise</option>
                             <option value="detailed">More detailed</option>
-                            <option value="enthusiastic">More enthusiastic</option>
-                            <option value="formal">More formal</option>
                         </select>
                         <button class="btn-small" onclick="rewriteSection('responsibilities')" id="rewriteBtnResponsibilities">Rewrite</button>
                     </div>
@@ -882,8 +995,6 @@
                             <option value="">AI Rewrite...</option>
                             <option value="concise">More concise</option>
                             <option value="detailed">More detailed</option>
-                            <option value="enthusiastic">More enthusiastic</option>
-                            <option value="formal">More formal</option>
                         </select>
                         <button class="btn-small" onclick="rewriteSection('qualifications')" id="rewriteBtnQualifications">Rewrite</button>
                     </div>
@@ -1011,6 +1122,15 @@
                 </div>
             </div>
 
+            <!-- Save Role for Future Reuse -->
+            <div style="margin-top:24px; padding-top:20px; border-top:2px solid #e5e7eb; text-align:center;">
+                <button class="btn btn-green" onclick="saveRole()" id="saveRoleBtn" style="padding:12px 28px;">
+                    <svg width="16" height="16" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Role for Future Use
+                </button>
+                <p style="font-size:13px; color:#6b7280; margin-top:8px;">Save this JD so you can reuse or reference it later.</p>
+            </div>
+
             <div class="buttons">
                 <button class="btn btn-secondary" onclick="goToStep(6)">&larr; Back</button>
                 <button class="btn btn-orange" onclick="startOver()">Start New Job Description</button>
@@ -1018,6 +1138,32 @@
         </div>
 
     </div><!-- /.container -->
+
+    <!-- ============================================
+         SAVED DRAFTS SECTION
+         ============================================ -->
+    <div class="drafts-section" id="draftsSection">
+        <h2>Saved Drafts</h2>
+        <p class="section-subtitle">Resume an in-progress job description</p>
+        <div class="drafts-grid" id="draftsGrid"></div>
+        <div class="drafts-empty" id="draftsEmpty" style="display:none;">
+            <div class="icon">&#128221;</div>
+            <p>No drafts in progress. Drafts save automatically after generation.</p>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SAVED ROLES SECTION
+         ============================================ -->
+    <div class="drafts-section" id="savedRolesSection">
+        <h2>Saved Roles</h2>
+        <p class="section-subtitle">Previously completed job descriptions</p>
+        <div class="drafts-grid" id="savedRolesGrid"></div>
+        <div class="drafts-empty" id="savedRolesEmpty" style="display:none;">
+            <div class="icon">&#128188;</div>
+            <p>No saved roles yet. Save a completed JD from the export page.</p>
+        </div>
+    </div>
 
     <!-- ====================================================== -->
     <!-- JavaScript                                             -->
@@ -1089,6 +1235,8 @@
             initUserGreeting();
             loadConfig();
             showStep(1);
+            loadDrafts();
+            loadSavedRoles();
         });
 
         function initUserGreeting() {
@@ -1186,7 +1334,7 @@
             standardBenefits.forEach(function(benefit, index) {
                 var item = document.createElement('label');
                 item.className = 'benefit-item checked';
-                item.innerHTML = '<input type="checkbox" checked data-benefit-index="' + index + '" onchange="window._briteRoles.toggleBenefit(this, ' + index + ')">' +
+                item.innerHTML = '<input type="checkbox" checked data-benefit-index="' + index + '" onchange="window._briteTalent.toggleBenefit(this, ' + index + ')">' +
                     '<span>' + escapeHTML(benefit) + '</span>';
                 container.appendChild(item);
             });
@@ -1243,7 +1391,8 @@
         function collectStepState(step) {
             if (step === 1) {
                 roleData.title = document.getElementById('roleTitle').value.trim();
-                roleData.department = document.getElementById('department').value;
+                var deptVal = document.getElementById('department').value;
+                roleData.department = (deptVal === 'Other') ? document.getElementById('departmentOther').value.trim() || 'Other' : deptVal;
                 roleData.reports_to = document.getElementById('reportsTo').value.trim();
                 roleData.location = document.getElementById('location').value.trim();
                 roleData.is_remote = document.getElementById('isRemote').checked;
@@ -1298,6 +1447,21 @@
         }
 
         // ──────────────────────────────────────
+        // Step 1: Department "Other" handler
+        // ──────────────────────────────────────
+        function handleDepartmentChange() {
+            var select = document.getElementById('department');
+            var otherInput = document.getElementById('departmentOther');
+            if (select.value === 'Other') {
+                otherInput.style.display = 'block';
+                otherInput.focus();
+            } else {
+                otherInput.style.display = 'none';
+                otherInput.value = '';
+            }
+        }
+
+        // ──────────────────────────────────────
         // Step 1: Work Arrangement (mutually exclusive)
         // ──────────────────────────────────────
         function handleWorkArrangement(type) {
@@ -1326,23 +1490,39 @@
             step2Mode = mode;
             var scratchEl = document.getElementById('scratchMode');
             var adaptEl = document.getElementById('adaptMode');
+            var reuseEl = document.getElementById('reuseMode');
             var scratchBtn = document.getElementById('modeFromScratch');
             var adaptBtn = document.getElementById('modeAdapt');
+            var reuseBtn = document.getElementById('modeReuse');
+
+            // Reset all
+            scratchEl.style.display = 'none';
+            adaptEl.style.display = 'none';
+            reuseEl.style.display = 'none';
+            scratchBtn.style.background = 'white';
+            scratchBtn.style.color = '#374151';
+            adaptBtn.style.background = 'white';
+            adaptBtn.style.color = '#374151';
+            reuseBtn.style.background = 'white';
+            reuseBtn.style.color = '#374151';
 
             if (mode === 'scratch') {
                 scratchEl.style.display = 'block';
-                adaptEl.style.display = 'none';
                 scratchBtn.style.background = '#018181';
                 scratchBtn.style.color = 'white';
-                adaptBtn.style.background = 'white';
-                adaptBtn.style.color = '#374151';
-            } else {
-                scratchEl.style.display = 'none';
+            } else if (mode === 'adapt') {
                 adaptEl.style.display = 'block';
                 adaptBtn.style.background = '#018181';
                 adaptBtn.style.color = 'white';
-                scratchBtn.style.background = 'white';
-                scratchBtn.style.color = '#374151';
+            } else if (mode === 'reuse') {
+                reuseEl.style.display = 'block';
+                reuseBtn.style.background = '#018181';
+                reuseBtn.style.color = 'white';
+                // Fetch latest saved roles for dropdown
+                fetch(API_BASE + '/api/list-saved-roles')
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) { populateReusableRoles(data.roles || []); })
+                    .catch(function() {});
             }
         }
 
@@ -1353,6 +1533,42 @@
             // Collect state from steps 1 & 2
             collectStepState(1);
             collectStepState(2);
+
+            // Handle reuse mode
+            if (step2Mode === 'reuse') {
+                var reuseNotes = document.getElementById('reuseNotes').value.trim();
+                if (!selectedReuseData) {
+                    alert('Please select a saved role to reuse.');
+                    return;
+                }
+
+                if (!reuseNotes) {
+                    // No modifications — load directly, skip AI
+                    var r = selectedReuseData;
+                    if (r.roleData) {
+                        // Merge: keep Step 1 fields from current form, but load sections from saved
+                        roleData.title = roleData.title || r.roleData.title;
+                    }
+                    generatedSections = r.generatedSections || { about: '', responsibilities: '', qualifications: '' };
+                    compensation = r.compensation || compensation;
+                    selectedBenefits = r.selectedBenefits || selectedBenefits;
+                    experienceLevel = r.experienceLevel || experienceLevel;
+
+                    currentStep = 4;
+                    showStep(4);
+                    initStepUI(4);
+                    saveDraft();
+                    return;
+                }
+
+                // Has modifications — send to AI with existing content as context
+                // Fall through to generation with notes containing the reuse context
+                notes = 'REUSING AN EXISTING ROLE DESCRIPTION. Here is the original content:\n\n' +
+                    'Role Description:\n' + (selectedReuseData.generatedSections || {}).about + '\n\n' +
+                    'Key Responsibilities:\n' + (selectedReuseData.generatedSections || {}).responsibilities + '\n\n' +
+                    'Qualifications:\n' + (selectedReuseData.generatedSections || {}).qualifications + '\n\n' +
+                    'MODIFICATIONS REQUESTED:\n' + reuseNotes;
+            }
 
             // Move to loading step
             currentStep = 3;
@@ -1401,6 +1617,9 @@
                 currentStep = 4;
                 showStep(4);
                 initStepUI(4);
+
+                // Auto-save draft after generation
+                saveDraft();
             })
             .catch(function(err) {
                 console.error('Generation error:', err);
@@ -1565,7 +1784,7 @@
             if (roleData.reports_to) {
                 html += '<span class="jd-meta-item"><strong>Reports to:</strong>&nbsp;' + escapeHTML(roleData.reports_to) + '</span>';
             }
-            if (roleData.location) {
+            if (roleData.location && !roleData.is_remote) {
                 html += '<span class="jd-meta-item"><strong>Location:</strong>&nbsp;' + escapeHTML(roleData.location) + '</span>';
             }
             if (roleData.is_remote) {
@@ -1774,7 +1993,7 @@
             var metaParts = [];
             if (roleData.department) metaParts.push('Department: ' + roleData.department);
             if (roleData.reports_to) metaParts.push('Reports to: ' + roleData.reports_to);
-            if (roleData.location) metaParts.push('Location: ' + roleData.location);
+            if (roleData.location && !roleData.is_remote) metaParts.push('Location: ' + roleData.location);
             if (roleData.is_remote) metaParts.push('Remote');
             if (roleData.is_hybrid) metaParts.push('Hybrid');
             if (metaParts.length > 0) {
@@ -1871,7 +2090,7 @@
             html += '<div class="meta">';
             if (roleData.department) html += '<strong>Department:</strong> ' + escapeHTML(roleData.department) + ' &nbsp;&bull;&nbsp; ';
             if (roleData.reports_to) html += '<strong>Reports to:</strong> ' + escapeHTML(roleData.reports_to) + ' &nbsp;&bull;&nbsp; ';
-            if (roleData.location) html += '<strong>Location:</strong> ' + escapeHTML(roleData.location) + ' ';
+            if (roleData.location && !roleData.is_remote) html += '<strong>Location:</strong> ' + escapeHTML(roleData.location) + ' ';
             if (roleData.is_remote) html += '<span class="badge">Remote</span> ';
             if (roleData.is_hybrid) html += '<span class="badge hybrid">Hybrid</span> ';
             html += '</div>';
@@ -1973,6 +2192,8 @@
             // Reset form fields
             document.getElementById('roleTitle').value = '';
             document.getElementById('department').value = '';
+            document.getElementById('departmentOther').value = '';
+            document.getElementById('departmentOther').style.display = 'none';
             document.getElementById('reportsTo').value = '';
             document.getElementById('location').value = 'Chicago, IL';
             document.getElementById('isRemote').checked = false;
@@ -1982,6 +2203,14 @@
             document.getElementById('charCount').textContent = '0 characters';
             document.getElementById('existingJD').value = '';
             document.getElementById('adaptNotes').value = '';
+            document.getElementById('reuseNotes').value = '';
+            selectedReuseFile = null;
+            selectedReuseData = null;
+            currentDraftFile = null;
+            var reuseSelect = document.getElementById('reuseRoleSelect');
+            if (reuseSelect) reuseSelect.value = '';
+            var reusePreview = document.getElementById('reusePreview');
+            if (reusePreview) reusePreview.style.display = 'none';
             setStep2Mode('scratch');
             document.getElementById('salaryMin').value = '';
             document.getElementById('salaryMax').value = '';
@@ -2026,14 +2255,337 @@
         }
 
         // ──────────────────────────────────────
+        // Draft Save / Load (GCS)
+        // ──────────────────────────────────────
+        var currentDraftFile = null; // track filename of current draft
+
+        function getAuthEmail() {
+            return (window.AUTH_USER && window.AUTH_USER.email) ? window.AUTH_USER.email : 'unknown';
+        }
+
+        function saveDraft() {
+            var payload = {
+                title: roleData.title || 'Untitled',
+                currentStep: currentStep,
+                roleData: roleData,
+                experienceLevel: experienceLevel,
+                step2Mode: step2Mode,
+                generatedSections: generatedSections,
+                compensation: compensation,
+                selectedBenefits: selectedBenefits,
+                savedBy: getAuthEmail(),
+            };
+
+            fetch(API_BASE + '/api/save-draft', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    currentDraftFile = data.file;
+                    loadDrafts(); // refresh list
+                }
+            })
+            .catch(function(err) {
+                console.error('Draft save error:', err);
+            });
+        }
+
+        function loadDrafts() {
+            fetch(API_BASE + '/api/list-drafts')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    var drafts = data.drafts || [];
+                    var grid = document.getElementById('draftsGrid');
+                    var empty = document.getElementById('draftsEmpty');
+                    var section = document.getElementById('draftsSection');
+
+                    if (drafts.length === 0) {
+                        grid.innerHTML = '';
+                        empty.style.display = 'block';
+                        section.style.display = 'block';
+                        return;
+                    }
+
+                    empty.style.display = 'none';
+                    section.style.display = 'block';
+                    grid.innerHTML = '';
+
+                    drafts.forEach(function(draft) {
+                        var card = document.createElement('div');
+                        card.className = 'draft-card';
+                        var stepText = draft.currentStep ? 'Step ' + draft.currentStep + ' of ' + totalSteps : '';
+                        var savedBy = draft.lastSavedBy ? draft.lastSavedBy.split('@')[0] : '';
+                        var dateStr = draft.lastSavedAt ? new Date(draft.lastSavedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+                        card.innerHTML =
+                            '<button class="delete-btn" onclick="event.stopPropagation(); deleteDraft(\'' + draft.filename + '\')">&times;</button>' +
+                            '<span class="draft-badge">Draft</span>' +
+                            '<h4>' + escapeHTML(draft.title || 'Untitled') + '</h4>' +
+                            '<p>' + escapeHTML(stepText) + '</p>' +
+                            '<p>By: ' + escapeHTML(savedBy) + '</p>' +
+                            '<p>' + escapeHTML(dateStr) + '</p>';
+
+                        card.onclick = function() { resumeDraft(draft.filename); };
+                        grid.appendChild(card);
+                    });
+                })
+                .catch(function(err) {
+                    console.error('Load drafts error:', err);
+                });
+        }
+
+        function resumeDraft(filename) {
+            fetch(API_BASE + '/api/load-draft?file=' + encodeURIComponent(filename))
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (!data.success || !data.draft) return;
+                    var d = data.draft;
+
+                    // Restore state
+                    roleData = d.roleData || { title: '', department: '', reports_to: '', location: '', is_remote: false, is_hybrid: false };
+                    generatedSections = d.generatedSections || { about: '', responsibilities: '', qualifications: '' };
+                    compensation = d.compensation || { salary_min: '', salary_max: '', include_equity: false, include_bonus: false, comp_notes: '' };
+                    selectedBenefits = d.selectedBenefits || standardBenefits.slice();
+                    experienceLevel = d.experienceLevel || 'mid';
+                    step2Mode = d.step2Mode || 'scratch';
+                    currentDraftFile = filename;
+
+                    // Restore form fields
+                    document.getElementById('roleTitle').value = roleData.title || '';
+                    document.getElementById('department').value = roleData.department || '';
+                    handleDepartmentChange();
+                    document.getElementById('reportsTo').value = roleData.reports_to || '';
+                    document.getElementById('location').value = roleData.location || 'Chicago, IL';
+                    document.getElementById('isRemote').checked = roleData.is_remote || false;
+                    document.getElementById('isHybrid').checked = roleData.is_hybrid || false;
+                    document.getElementById('experienceLevel').value = experienceLevel;
+                    document.getElementById('roleNotes').value = '';
+                    validateStep1();
+
+                    // Jump to the saved step
+                    var targetStep = d.currentStep || 4;
+                    currentStep = targetStep;
+                    showStep(targetStep);
+                    initStepUI(targetStep);
+                })
+                .catch(function(err) {
+                    console.error('Resume draft error:', err);
+                    alert('Failed to load draft.');
+                });
+        }
+
+        function deleteDraft(filename) {
+            if (!confirm('Delete this draft?')) return;
+            fetch(API_BASE + '/api/delete-draft', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file: filename })
+            })
+            .then(function() { loadDrafts(); })
+            .catch(function(err) { console.error('Delete draft error:', err); });
+        }
+
+        // ──────────────────────────────────────
+        // Saved Roles (GCS)
+        // ──────────────────────────────────────
+        function saveRole() {
+            collectStepState(5);
+
+            var payload = {
+                title: roleData.title || 'Untitled',
+                roleData: roleData,
+                experienceLevel: experienceLevel,
+                generatedSections: generatedSections,
+                compensation: compensation,
+                selectedBenefits: selectedBenefits,
+                savedBy: getAuthEmail(),
+            };
+
+            var btn = document.getElementById('saveRoleBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            fetch(API_BASE + '/api/save-role', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showCopyFeedback('Role saved for future use!');
+                    currentDraftFile = null;
+                    loadDrafts();
+                    loadSavedRoles();
+                } else {
+                    alert('Failed to save role: ' + (data.error || 'Unknown error'));
+                }
+                btn.disabled = false;
+                btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Role for Future Use';
+            })
+            .catch(function(err) {
+                console.error('Save role error:', err);
+                alert('Failed to save role.');
+                btn.disabled = false;
+                btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Role for Future Use';
+            });
+        }
+
+        function loadSavedRoles() {
+            fetch(API_BASE + '/api/list-saved-roles')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    var roles = data.roles || [];
+                    var grid = document.getElementById('savedRolesGrid');
+                    var empty = document.getElementById('savedRolesEmpty');
+                    var section = document.getElementById('savedRolesSection');
+
+                    if (roles.length === 0) {
+                        grid.innerHTML = '';
+                        empty.style.display = 'block';
+                        section.style.display = 'block';
+                        return;
+                    }
+
+                    empty.style.display = 'none';
+                    section.style.display = 'block';
+                    grid.innerHTML = '';
+
+                    roles.forEach(function(role) {
+                        var card = document.createElement('div');
+                        card.className = 'draft-card';
+                        var savedBy = role.lastSavedBy ? role.lastSavedBy.split('@')[0] : '';
+                        var dateStr = role.lastSavedAt ? new Date(role.lastSavedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                        var deptText = role.department ? role.department : '';
+
+                        card.innerHTML =
+                            '<button class="delete-btn" onclick="event.stopPropagation(); deleteSavedRole(\'' + role.filename + '\')">&times;</button>' +
+                            '<span class="saved-badge">Saved</span>' +
+                            '<h4>' + escapeHTML(role.title || 'Untitled') + '</h4>' +
+                            (deptText ? '<p>' + escapeHTML(deptText) + '</p>' : '') +
+                            '<p>By: ' + escapeHTML(savedBy) + '</p>' +
+                            '<p>' + escapeHTML(dateStr) + '</p>';
+
+                        card.onclick = function() { viewSavedRole(role.filename); };
+                        grid.appendChild(card);
+                    });
+
+                    // Also update the reuse dropdown if it exists
+                    populateReusableRoles(roles);
+                })
+                .catch(function(err) {
+                    console.error('Load saved roles error:', err);
+                });
+        }
+
+        function viewSavedRole(filename) {
+            fetch(API_BASE + '/api/load-saved-role?file=' + encodeURIComponent(filename))
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (!data.success || !data.role) return;
+                    var r = data.role;
+
+                    // Restore state
+                    roleData = r.roleData || { title: '', department: '', reports_to: '', location: '', is_remote: false, is_hybrid: false };
+                    generatedSections = r.generatedSections || { about: '', responsibilities: '', qualifications: '' };
+                    compensation = r.compensation || { salary_min: '', salary_max: '', include_equity: false, include_bonus: false, comp_notes: '' };
+                    selectedBenefits = r.selectedBenefits || standardBenefits.slice();
+                    experienceLevel = r.experienceLevel || 'mid';
+                    currentDraftFile = null;
+
+                    // Jump to preview (step 6)
+                    currentStep = 6;
+                    showStep(6);
+                    renderPreview();
+                })
+                .catch(function(err) {
+                    console.error('View saved role error:', err);
+                    alert('Failed to load role.');
+                });
+        }
+
+        function deleteSavedRole(filename) {
+            if (!confirm('Delete this saved role?')) return;
+            fetch(API_BASE + '/api/delete-saved-role', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file: filename })
+            })
+            .then(function() { loadSavedRoles(); })
+            .catch(function(err) { console.error('Delete role error:', err); });
+        }
+
+        // ──────────────────────────────────────
+        // Reuse Previous Role (for Step 2)
+        // ──────────────────────────────────────
+        var selectedReuseFile = null;
+        var selectedReuseData = null;
+
+        function populateReusableRoles(roles) {
+            var select = document.getElementById('reuseRoleSelect');
+            if (!select) return;
+            select.innerHTML = '<option value="">Select a saved role...</option>';
+            (roles || []).forEach(function(role) {
+                var opt = document.createElement('option');
+                opt.value = role.filename;
+                opt.textContent = role.title + (role.department ? ' (' + role.department + ')' : '');
+                select.appendChild(opt);
+            });
+        }
+
+        function onReuseRoleSelected() {
+            var select = document.getElementById('reuseRoleSelect');
+            var preview = document.getElementById('reusePreview');
+            selectedReuseFile = select.value;
+
+            if (!selectedReuseFile) {
+                preview.style.display = 'none';
+                selectedReuseData = null;
+                return;
+            }
+
+            preview.innerHTML = '<p style="color:#6b7280;">Loading...</p>';
+            preview.style.display = 'block';
+
+            fetch(API_BASE + '/api/load-saved-role?file=' + encodeURIComponent(selectedReuseFile))
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (!data.success || !data.role) {
+                        preview.innerHTML = '<p style="color:#dc3545;">Failed to load role.</p>';
+                        return;
+                    }
+                    selectedReuseData = data.role;
+                    var r = data.role;
+                    var rd = r.roleData || {};
+
+                    var html = '<div style="background:#f9fafb; border:2px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:12px;">';
+                    html += '<h4 style="color:#018181; margin-bottom:8px;">' + escapeHTML(rd.title || 'Untitled') + '</h4>';
+                    if (rd.department) html += '<p style="font-size:13px; color:#6b7280;">Department: ' + escapeHTML(rd.department) + '</p>';
+                    if (r.generatedSections && r.generatedSections.about) {
+                        var aboutSnippet = r.generatedSections.about.substring(0, 200);
+                        html += '<p style="font-size:13px; color:#374151; margin-top:8px;">' + escapeHTML(aboutSnippet) + '...</p>';
+                    }
+                    html += '</div>';
+                    preview.innerHTML = html;
+                })
+                .catch(function(err) {
+                    preview.innerHTML = '<p style="color:#dc3545;">Failed to load role.</p>';
+                });
+        }
+
+        // ──────────────────────────────────────
         // Expose to global scope for onclick
         // ──────────────────────────────────────
-        window._briteRoles = {
+        window._briteTalent = {
             toggleBenefit: toggleBenefit
         };
         window.goToStep = goToStep;
         window.setStep2Mode = setStep2Mode;
         window.validateStep1 = validateStep1;
+        window.handleDepartmentChange = handleDepartmentChange;
         window.handleWorkArrangement = handleWorkArrangement;
         window.updateCharCount = updateCharCount;
         window.generateJobDescription = generateJobDescription;
@@ -2042,6 +2594,12 @@
         window.copyAsText = copyAsText;
         window.downloadAsDoc = downloadAsDoc;
         window.startOver = startOver;
+        window.saveRole = saveRole;
+        window.deleteDraft = deleteDraft;
+        window.resumeDraft = resumeDraft;
+        window.deleteSavedRole = deleteSavedRole;
+        window.viewSavedRole = viewSavedRole;
+        window.onReuseRoleSelected = onReuseRoleSelected;
 
     })();
     </script>

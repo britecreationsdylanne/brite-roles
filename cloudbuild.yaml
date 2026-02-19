@@ -1,18 +1,18 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/briteroles', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/britetalent', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/briteroles']
+    args: ['push', 'gcr.io/$PROJECT_ID/britetalent']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'briteroles'
+      - 'britetalent'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/briteroles'
+      - 'gcr.io/$PROJECT_ID/britetalent'
       - '--region'
       - 'us-central1'
       - '--platform'
@@ -21,7 +21,7 @@ steps:
       - '--set-env-vars=ANTHROPIC_API_KEY=${_ANTHROPIC_API_KEY},GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID},GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET},FLASK_SECRET_KEY=${_FLASK_SECRET_KEY}'
 
 images:
-  - 'gcr.io/$PROJECT_ID/briteroles'
+  - 'gcr.io/$PROJECT_ID/britetalent'
 
 options:
   logging: CLOUD_LOGGING_ONLY

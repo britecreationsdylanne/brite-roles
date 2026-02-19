@@ -1,5 +1,5 @@
 """
-BriteRoles - Job Description Generator Configuration
+BriteTalent - Job Description Generator Configuration
 Company info, standard benefits, system prompts, and JD templates.
 """
 
@@ -51,6 +51,7 @@ DEPARTMENTS = [
     "Marketing",
     "Sales",
     "Underwriting",
+    "Other",
 ]
 
 
@@ -99,6 +100,17 @@ BRITEROLES_SYSTEM_PROMPT = (
 # ──────────────────────────────────────────
 # AI Prompt Templates
 # ──────────────────────────────────────────
+
+# ──────────────────────────────────────────
+# Google Cloud Storage Configuration
+# ──────────────────────────────────────────
+
+GCS_CONFIG = {
+    "bucket": "britetalent-data",
+    "drafts_prefix": "drafts/",
+    "saved_prefix": "saved/",
+}
+
 
 AI_PROMPTS = {
     "generate_jd": (

@@ -1,13 +1,16 @@
 """
-BriteRoles - Job Description Generator
+BriteTalent - Job Description Generator
 Flask backend API for generating polished job descriptions with Claude AI
 """
 
 import os
 import sys
 import json
+import re
 import secrets
 from datetime import datetime
+
+import pytz
 
 from flask import Flask, request, jsonify, redirect, session, url_for, Response
 from flask_cors import CORS
@@ -32,7 +35,10 @@ from config.briteroles_config import (
     EXPERIENCE_LEVELS,
     BRITEROLES_SYSTEM_PROMPT,
     AI_PROMPTS,
+    GCS_CONFIG,
 )
+
+CHICAGO_TZ = pytz.timezone('America/Chicago')
 
 
 # ============================================================================
@@ -91,6 +97,21 @@ try:
     print("[OK] Claude initialized")
 except Exception as e:
     print(f"[WARNING] Claude not available: {e}")
+
+
+# ============================================================================
+# INITIALIZE GOOGLE CLOUD STORAGE
+# ============================================================================
+
+GCS_BUCKET = GCS_CONFIG['bucket']
+gcs_client = None
+
+try:
+    from google.cloud import storage as gcs_storage
+    gcs_client = gcs_storage.Client()
+    print("[OK] GCS initialized")
+except Exception as e:
+    print(f"[WARNING] GCS not available: {e}")
 
 
 # ============================================================================
@@ -209,7 +230,7 @@ def health_check():
     """Simple health check for Cloud Run / load balancers"""
     return jsonify({
         "status": "healthy",
-        "app": "BriteRoles",
+        "app": "BriteTalent",
         "timestamp": datetime.now().isoformat()
     })
 
@@ -421,6 +442,230 @@ def rewrite_section():
 
 
 # ============================================================================
+# DRAFT SAVE / LOAD ROUTES (GCS)
+# ============================================================================
+
+def _slugify(text):
+    """Convert text to URL-safe slug"""
+    slug = text.lower().strip()
+    slug = re.sub(r'[^a-z0-9]+', '-', slug)
+    return slug.strip('-')[:60]
+
+
+@app.route('/api/save-draft', methods=['POST'])
+def save_draft():
+    """Save JD draft to GCS"""
+    if not gcs_client:
+        return jsonify({'success': False, 'error': 'GCS not available'}), 503
+    try:
+        data = request.json
+        title = data.get('title', 'untitled')
+        saved_by = data.get('savedBy', 'unknown').split('@')[0].replace('.', '-')
+        blob_name = f"drafts/{_slugify(title)}-{saved_by}.json"
+
+        draft = {
+            'title': title,
+            'currentStep': data.get('currentStep'),
+            'roleData': data.get('roleData'),
+            'experienceLevel': data.get('experienceLevel'),
+            'step2Mode': data.get('step2Mode'),
+            'generatedSections': data.get('generatedSections'),
+            'compensation': data.get('compensation'),
+            'selectedBenefits': data.get('selectedBenefits'),
+            'lastSavedBy': data.get('savedBy', 'unknown'),
+            'lastSavedAt': datetime.now(CHICAGO_TZ).isoformat(),
+        }
+
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blob = bucket.blob(blob_name)
+        blob.upload_from_string(json.dumps(draft), content_type='application/json')
+        safe_print(f"[DRAFT] Saved {blob_name}")
+        return jsonify({'success': True, 'file': blob_name})
+
+    except Exception as e:
+        safe_print(f"[DRAFT SAVE ERROR] {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/list-drafts', methods=['GET'])
+def list_drafts():
+    """List all saved drafts from GCS"""
+    if not gcs_client:
+        return jsonify({'success': True, 'drafts': []})
+    try:
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blobs = bucket.list_blobs(prefix='drafts/')
+        drafts = []
+        for blob in blobs:
+            if not blob.name.endswith('.json'):
+                continue
+            data = json.loads(blob.download_as_text())
+            drafts.append({
+                'title': data.get('title', 'Untitled'),
+                'currentStep': data.get('currentStep'),
+                'lastSavedBy': data.get('lastSavedBy'),
+                'lastSavedAt': data.get('lastSavedAt'),
+                'filename': blob.name,
+            })
+        drafts.sort(key=lambda d: d.get('lastSavedAt', ''), reverse=True)
+        return jsonify({'success': True, 'drafts': drafts})
+    except Exception as e:
+        safe_print(f"[DRAFT LIST ERROR] {str(e)}")
+        return jsonify({'success': True, 'drafts': []})
+
+
+@app.route('/api/load-draft', methods=['GET'])
+def load_draft():
+    """Load a specific draft from GCS"""
+    if not gcs_client:
+        return jsonify({'success': False, 'error': 'GCS not available'}), 503
+    try:
+        filename = request.args.get('file')
+        if not filename:
+            return jsonify({'success': False, 'error': 'No file specified'}), 400
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blob = bucket.blob(filename)
+        data = json.loads(blob.download_as_text())
+        return jsonify({'success': True, 'draft': data})
+    except Exception as e:
+        safe_print(f"[DRAFT LOAD ERROR] {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/delete-draft', methods=['DELETE'])
+def delete_draft():
+    """Delete a draft from GCS"""
+    if not gcs_client:
+        return jsonify({'success': True})
+    try:
+        filename = request.json.get('file')
+        if not filename:
+            return jsonify({'success': False, 'error': 'No file specified'}), 400
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blob = bucket.blob(filename)
+        if blob.exists():
+            blob.delete()
+        safe_print(f"[DRAFT] Deleted {filename}")
+        return jsonify({'success': True})
+    except Exception as e:
+        safe_print(f"[DRAFT DELETE ERROR] {str(e)}")
+        return jsonify({'success': True})
+
+
+# ============================================================================
+# SAVED ROLES ROUTES (GCS)
+# ============================================================================
+
+@app.route('/api/save-role', methods=['POST'])
+def save_role():
+    """Save completed role to GCS"""
+    if not gcs_client:
+        return jsonify({'success': False, 'error': 'GCS not available'}), 503
+    try:
+        data = request.json
+        title = data.get('title', 'untitled')
+        saved_by = data.get('savedBy', 'unknown').split('@')[0].replace('.', '-')
+        blob_name = f"saved/{_slugify(title)}-{saved_by}.json"
+
+        role = {
+            'title': title,
+            'roleData': data.get('roleData'),
+            'experienceLevel': data.get('experienceLevel'),
+            'generatedSections': data.get('generatedSections'),
+            'compensation': data.get('compensation'),
+            'selectedBenefits': data.get('selectedBenefits'),
+            'lastSavedBy': data.get('savedBy', 'unknown'),
+            'lastSavedAt': datetime.now(CHICAGO_TZ).isoformat(),
+        }
+
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blob = bucket.blob(blob_name)
+        blob.upload_from_string(json.dumps(role), content_type='application/json')
+        safe_print(f"[ROLE] Saved {blob_name}")
+
+        # Delete corresponding draft if it exists
+        draft_name = f"drafts/{_slugify(title)}-{saved_by}.json"
+        draft_blob = bucket.blob(draft_name)
+        if draft_blob.exists():
+            draft_blob.delete()
+            safe_print(f"[ROLE] Cleaned up draft {draft_name}")
+
+        return jsonify({'success': True, 'file': blob_name})
+
+    except Exception as e:
+        safe_print(f"[ROLE SAVE ERROR] {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/list-saved-roles', methods=['GET'])
+def list_saved_roles():
+    """List all saved roles from GCS"""
+    if not gcs_client:
+        return jsonify({'success': True, 'roles': []})
+    try:
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blobs = bucket.list_blobs(prefix='saved/')
+        roles = []
+        for blob in blobs:
+            if not blob.name.endswith('.json'):
+                continue
+            data = json.loads(blob.download_as_text())
+            rd = data.get('roleData', {})
+            roles.append({
+                'title': data.get('title', 'Untitled'),
+                'department': rd.get('department', ''),
+                'lastSavedBy': data.get('lastSavedBy'),
+                'lastSavedAt': data.get('lastSavedAt'),
+                'filename': blob.name,
+            })
+        roles.sort(key=lambda d: d.get('lastSavedAt', ''), reverse=True)
+        return jsonify({'success': True, 'roles': roles})
+    except Exception as e:
+        safe_print(f"[ROLE LIST ERROR] {str(e)}")
+        return jsonify({'success': True, 'roles': []})
+
+
+@app.route('/api/load-saved-role', methods=['GET'])
+def load_saved_role():
+    """Load a specific saved role from GCS"""
+    if not gcs_client:
+        return jsonify({'success': False, 'error': 'GCS not available'}), 503
+    try:
+        filename = request.args.get('file')
+        if not filename:
+            return jsonify({'success': False, 'error': 'No file specified'}), 400
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blob = bucket.blob(filename)
+        if not blob.exists():
+            return jsonify({'success': False, 'error': 'Not found'}), 404
+        data = json.loads(blob.download_as_text())
+        return jsonify({'success': True, 'role': data})
+    except Exception as e:
+        safe_print(f"[ROLE LOAD ERROR] {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/delete-saved-role', methods=['DELETE'])
+def delete_saved_role():
+    """Delete a saved role from GCS"""
+    if not gcs_client:
+        return jsonify({'success': True})
+    try:
+        filename = request.json.get('file')
+        if not filename:
+            return jsonify({'success': False, 'error': 'No file specified'}), 400
+        bucket = gcs_client.bucket(GCS_BUCKET)
+        blob = bucket.blob(filename)
+        if blob.exists():
+            blob.delete()
+        safe_print(f"[ROLE] Deleted {filename}")
+        return jsonify({'success': True})
+    except Exception as e:
+        safe_print(f"[ROLE DELETE ERROR] {str(e)}")
+        return jsonify({'success': True})
+
+
+# ============================================================================
 # MAIN
 # ============================================================================
 
@@ -429,10 +674,11 @@ if __name__ == '__main__':
     debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
 
     print(f"\n{'='*50}")
-    print(f"  BriteRoles - Job Description Generator")
+    print(f"  BriteTalent - Job Description Generator")
     print(f"  Port: {port}")
     print(f"  Debug: {debug}")
     print(f"  Claude: {'Ready' if claude_client else 'NOT AVAILABLE'}")
+    print(f"  GCS: {'Ready' if gcs_client else 'NOT AVAILABLE'}")
     print(f"  OAuth: {'Configured' if os.environ.get('GOOGLE_CLIENT_ID') else 'Disabled (local dev)'}")
     print(f"{'='*50}\n")
 
