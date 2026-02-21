@@ -1590,6 +1590,10 @@
             .then(function(data) {
                 // Parse the generated markdown into sections
                 var content = data.job_description || data.content || data.generated || data.text || '';
+
+                // Safety net: ensure AI output references the correct title/department/work type
+                content = enforceRoleDetails(content);
+
                 parseSectionsFromMarkdown(content);
 
                 // Advance to review
@@ -2231,6 +2235,53 @@
             var num = parseInt(value, 10);
             if (isNaN(num)) return '$0';
             return '$' + num.toLocaleString('en-US');
+        }
+
+        // Ensure AI-generated text uses the correct title, department, and work type
+        function enforceRoleDetails(content) {
+            if (!content) return content;
+            var title = roleData.title;
+            var dept = roleData.department;
+
+            // Fix work type references in the first paragraph (Role Description)
+            if (roleData.is_remote && !roleData.is_hybrid) {
+                content = content.replace(/\b(hybrid|on-site|in-office)\b/gi, 'remote');
+            } else if (roleData.is_hybrid) {
+                content = content.replace(/\bfully remote\b/gi, 'hybrid');
+            }
+
+            // If the AI used a completely wrong title in the opening sentence, fix it
+            // Look for common patterns like "As a [Wrong Title]" or "role for a [Wrong Title]"
+            if (title) {
+                var titlePatterns = [
+                    /As an? ([A-Z][A-Za-z\s&\/\-]+?) on /i,
+                    /As an? ([A-Z][A-Za-z\s&\/\-]+?), you/i,
+                    /role for an? ([A-Z][A-Za-z\s&\/\-]+?)\./i,
+                    /hiring an? ([A-Z][A-Za-z\s&\/\-]+?) to /i
+                ];
+                for (var i = 0; i < titlePatterns.length; i++) {
+                    var match = content.match(titlePatterns[i]);
+                    if (match && match[1].trim().toLowerCase() !== title.trim().toLowerCase()) {
+                        content = content.replace(match[1], title);
+                    }
+                }
+            }
+
+            // Fix wrong department references
+            if (dept && dept !== 'Other') {
+                var deptPatterns = [
+                    /on our ([A-Z][A-Za-z\s&]+?) team/i,
+                    /in the ([A-Z][A-Za-z\s&]+?) department/i
+                ];
+                for (var j = 0; j < deptPatterns.length; j++) {
+                    var dMatch = content.match(deptPatterns[j]);
+                    if (dMatch && dMatch[1].trim().toLowerCase() !== dept.trim().toLowerCase()) {
+                        content = content.replace(dMatch[1], dept);
+                    }
+                }
+            }
+
+            return content;
         }
 
         // ──────────────────────────────────────
