@@ -542,13 +542,12 @@
             background: #018181;
             border-radius: 50%;
         }
-        .jd-section.about-company h2 {
+        .jd-section.about-company h1 {
             font-size: 28px;
-            font-weight: bold;
             color: #272d3f;
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0fafa;
+            margin-bottom: 12px;
         }
         .jd-divider {
             border: none;
@@ -1743,7 +1742,7 @@
             // About BriteCo (at the top)
             if (companyDescription) {
                 html += '<div class="jd-section about-company" style="margin-bottom:28px;">';
-                html += '<h2>About BriteCo</h2>';
+                html += '<h1>About BriteCo</h1>';
                 var paragraphs = companyDescription.split('\n\n');
                 paragraphs.forEach(function(p) {
                     if (p.trim()) {
@@ -2058,7 +2057,7 @@
 
             // About BriteCo at top
             if (companyDescription) {
-                html += '<div class="about-company"><h2>About BriteCo</h2>';
+                html += '<div class="about-company"><h1>About BriteCo</h1>';
                 companyDescription.split('\n\n').forEach(function(p) {
                     if (p.trim()) html += '<p>' + escapeHTML(p.trim()) + '</p>';
                 });
